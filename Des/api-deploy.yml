@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: depl-app
+spec:
+  selector:
+    matchLabels:
+      app: api-go
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: api-go
+    spec:
+      containers:
+        - name: api-go
+          image: elsanita/imagensanita:v1
+          env:
+            - name: DATABASE_URL
+              value: postgres://postgres:postgres@postgres-service:5432/postgres?sslmode=disable
+          ports:
+            - containerPort: 8000
+            
+#para el servicio de exponer la api
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: apigo-service
+spec:
+  selector:
+    app: api-go
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
